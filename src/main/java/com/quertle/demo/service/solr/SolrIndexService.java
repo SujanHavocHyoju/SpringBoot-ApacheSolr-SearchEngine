@@ -20,6 +20,18 @@ import com.quertle.demo.utils.SolrUtils;
 @Service
 public class SolrIndexService {
 
+	private static final String URL_LINK = "url_link";
+
+	private static final String FULL_TEXT = "full_text";
+
+	private static final String ABSTRACT = "abstract_content";
+
+	private static final String DATE_PUBLISHED = "date_published";
+
+	private static final String AUTHOR = "author";
+
+	private static final String TITLE = "title";
+
 	private static final Logger LOG = LoggerFactory.getLogger(SolrIndexService.class);
 
 	@Autowired
@@ -80,21 +92,21 @@ public class SolrIndexService {
 		LOG.info("Id : {} ", id.toString());
 		// document.addField("id", id.toString());
 		LOG.info("Title : {} ", title);
-		document.addField("title", title);
+		document.addField(TITLE, title);
 		if (authors != null && authors.size() > 0)
 			for (Author author : authors) {
-				document.addField("author", author);
+				document.addField(AUTHOR, author);
 				LOG.info("Author : {} ", author);
 			}
 		// document.addField("authors", f.getAuthors());
 		LOG.info("Date Published : {} ", datePublished.toString());
-		document.addField("date_published", datePublished.toString());
+		document.addField(DATE_PUBLISHED, datePublished.toString());
 		if (abstractContent != null)
-			document.addField("abstract_content", abstractContent);
+			document.addField(ABSTRACT, abstractContent);
 		if (fullText != null)
-			document.addField("full_text", fullText);
+			document.addField(FULL_TEXT, fullText);
 		if (urlLink != null)
-			document.addField("url_link", urlLink);
+			document.addField(URL_LINK, urlLink);
 		//LOG.info("Doc: {}", document);
 		return document;
 	}
