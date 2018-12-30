@@ -2,6 +2,7 @@ package com.quertle.demo.model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -144,9 +145,23 @@ public class FierceNews {
 	public static FierceNews getSolrFierceNews(SolrDocument doc) throws ParseException {
 		FierceNews n = new FierceNews();
 		n.setTitle(doc.getFieldValue(TITLE).toString());
-		String strDate = doc.getFieldValue("date_published").toString();
+		String strDate = doc.get("date_published").toString();
 		n.setDatePublished(new SimpleDateFormat("YYYY-MM-dd").parse(strDate.substring(0, strDate.indexOf(" "))));
-		n.setUrlLink(doc.getFieldValue("url_link").toString());
+		n.setUrlLink(doc.getFieldValue(URL_LINK).toString());
+		String authors = doc.getFieldValue(AUTHORS).toString();
+		if (authors != null && !authors.isEmpty()) {
+			String[] auths = authors.split(",");
+			List<Author> authorList = new ArrayList<>();
+			for (String auth : auths) {
+				if (!auth.trim().isEmpty()) {
+					String[] names = auth.split(" ");
+					Author author = new Author(names[0], names[1]);
+					authorList.add(author);
+				}
+			}
+			if (!authorList.isEmpty())
+				n.setAuthors(authorList);
+		}
 		return n;
 	}
 }

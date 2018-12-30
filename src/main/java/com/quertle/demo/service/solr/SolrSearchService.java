@@ -44,24 +44,52 @@ public class SolrSearchService {
 	 */
 	public void searchFromSolr(String termToSearch) {
 		solr = solrClient.initializeSolr();
-		serchFromIndex(termToSearch);
+		//serchFromIndex(termToSearch);
+		serch(termToSearch);
 	}
 
 	/**
-	 * This method searches for documents from Lucene index
+	 * This method searches for documents from Solr index
 	 * 
 	 */
 	public SearchDto serchFromIndex(String termToSearch) {
 		LOG.info("Searching Records");
 		SolrQuery query = new SolrQuery();
 		try {
-			// Search by QUeryResponse
+			// Search by QueryResponse
 			query.setQuery("first_name:"+termToSearch+ "OR id:"+termToSearch+"");
 			QueryResponse response = solr.query(query);
 			SolrDocumentList docList = response.getResults();
-			//assertEquals(docList.getNumFound(), 1);
 			
 			List<FierceNews> news = new ArrayList<>();
+			for (SolrDocument doc : docList) {
+			     LOG.info((String) doc.getFieldValue("title"));
+			     FierceNews fierceNews = FierceNews.getSolrFierceNews(doc);
+			     news.add(fierceNews);
+			     LOG.info("Title Results: {}", fierceNews.getTitle());
+			}
+			return new SearchDto(termToSearch, news);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * This is alternative method which searches for documents from Solr index
+	 * 
+	 */
+	public SearchDto serch(String termToSearch) {
+		LOG.info("Searching Records From Solr Index");
+		List<FierceNews> news = new ArrayList<>();
+		LOG.info("Search Term :{}", termToSearch);
+		SolrQuery query = new SolrQuery();
+		query.set("q", getQuery(termToSearch));
+		LOG.info("Solr Query :{}", query);
+		QueryResponse response;
+		try {
+			response = solr.query(query);
+			SolrDocumentList docList = response.getResults();
 			for (SolrDocument doc : docList) {
 			     LOG.info((String) doc.getFieldValue("title"));
 			     //assertEquals((Double) doc.getFieldValue("price"), (Double) 599.99);
@@ -74,6 +102,17 @@ public class SolrSearchService {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	private String getQuery(String termToSearch) {
+		StringBuffer fullQuery = new StringBuffer();
+		String[] fields = FierceNews.getFields();
+		for (String f : fields) {
+			fullQuery.append(f).append(":").append(termToSearch).append(" or ");
+		}
+		String tempQuery = fullQuery.toString();
+		tempQuery = tempQuery.substring(0, tempQuery.lastIndexOf("or"));
+		return tempQuery;
 	}
 
 }
