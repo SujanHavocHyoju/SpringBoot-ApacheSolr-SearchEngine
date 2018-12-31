@@ -17,8 +17,9 @@ import javax.persistence.OneToMany;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.solr.client.solrj.beans.Field;
 import org.apache.solr.common.SolrDocument;
+
+import com.quertle.demo.utils.DateUtils;
 
 @Entity
 public class FierceNews {
@@ -28,12 +29,12 @@ public class FierceNews {
 	private static final String URL_LINK = "urlLink";
 
 	private static final String TITLE = "title";
-	
+
 	private static final String FULL_TEXT = "fullText";
-	
+
 	private static final String ABSTRACT = "abstract";
-	
-	private static final String AUTHORS = "authors";
+
+	private static final String AUTHORS = "author";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,7 +51,7 @@ public class FierceNews {
 	private List<Author> authors;
 
 	private Date datePublished;
-	
+
 	@Column(columnDefinition = "text")
 	private String abstractContent;
 
@@ -62,7 +63,7 @@ public class FierceNews {
 		return id;
 	}
 
-	//@Field("id")
+	// @Field("id")
 	public void setId(Integer id) {
 		this.id = id;
 	}
@@ -71,7 +72,7 @@ public class FierceNews {
 		return title;
 	}
 
-	//@Field("title")
+	// @Field("title")
 	public void setTitle(String title) {
 		this.title = title;
 	}
@@ -80,7 +81,7 @@ public class FierceNews {
 		return authors;
 	}
 
-	//@Field("authors")
+	// @Field("authors")
 	public void setAuthors(List<Author> authors) {
 		this.authors = authors;
 	}
@@ -89,7 +90,7 @@ public class FierceNews {
 		return datePublished;
 	}
 
-	//@Field("date_published")
+	// @Field("date_published")
 	public void setDatePublished(Date datePublished) {
 		this.datePublished = datePublished;
 	}
@@ -98,7 +99,7 @@ public class FierceNews {
 		return abstractContent;
 	}
 
-	//@Field("abstract_content")
+	// @Field("abstract_content")
 	public void setAbstractContent(String abstractContent) {
 		this.abstractContent = abstractContent;
 	}
@@ -107,7 +108,7 @@ public class FierceNews {
 		return fullText;
 	}
 
-	//@Field("full_text")
+	// @Field("full_text")
 	public void setFullText(String fullText) {
 		this.fullText = fullText;
 	}
@@ -116,7 +117,7 @@ public class FierceNews {
 		return urlLink;
 	}
 
-	//@Field("url_link")
+	// @Field("url_link")
 	public void setUrlLink(String urlLink) {
 		this.urlLink = urlLink;
 	}
@@ -130,25 +131,29 @@ public class FierceNews {
 		n.setAbstractContent(document.get(ABSTRACT));
 		return n;
 	}
-	
+
 	public static String[] getFields() {
 		String[] s = { AUTHORS, ABSTRACT, FULL_TEXT, TITLE, DATE_PUBLISHED, URL_LINK };
 		return s;
 	}
-	
+
 	public static Occur[] getFlags() {
-		BooleanClause.Occur[] flags = { BooleanClause.Occur.SHOULD, BooleanClause.Occur.SHOULD, BooleanClause.Occur.SHOULD,
-				BooleanClause.Occur.SHOULD, BooleanClause.Occur.SHOULD, BooleanClause.Occur.SHOULD };
+		BooleanClause.Occur[] flags = { BooleanClause.Occur.SHOULD, BooleanClause.Occur.SHOULD,
+				BooleanClause.Occur.SHOULD, BooleanClause.Occur.SHOULD, BooleanClause.Occur.SHOULD,
+				BooleanClause.Occur.SHOULD };
 		return flags;
 	}
 
 	public static FierceNews getSolrFierceNews(SolrDocument doc) throws ParseException {
 		FierceNews n = new FierceNews();
 		n.setTitle(doc.getFieldValue(TITLE).toString());
-		String strDate = doc.get("date_published").toString();
-		n.setDatePublished(new SimpleDateFormat("YYYY-MM-dd").parse(strDate.substring(0, strDate.indexOf(" "))));
+		String strDate = doc.get(DATE_PUBLISHED).toString();
+		System.out.println(doc.get(DATE_PUBLISHED));
+		n.setDatePublished(DateUtils.getDate(doc.get(DATE_PUBLISHED).toString()));
 		n.setUrlLink(doc.getFieldValue(URL_LINK).toString());
+		n.setAbstractContent(doc.getFieldValue(ABSTRACT).toString());
 		String authors = doc.getFieldValue(AUTHORS).toString();
+		System.out.println(doc.getFieldValue(AUTHORS));
 		if (authors != null && !authors.isEmpty()) {
 			String[] auths = authors.split(",");
 			List<Author> authorList = new ArrayList<>();

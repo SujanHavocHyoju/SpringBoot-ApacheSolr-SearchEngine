@@ -42,10 +42,10 @@ public class SolrSearchService {
 	 * This method starts the Solr Search process
 	 * 
 	 */
-	public void searchFromSolr(String termToSearch) {
+	public SearchDto searchFromSolr(String termToSearch) {
 		solr = solrClient.initializeSolr();
 		//serchFromIndex(termToSearch);
-		serch(termToSearch);
+		return serch(termToSearch);
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class SolrSearchService {
 		SolrQuery query = new SolrQuery();
 		try {
 			// Search by QueryResponse
-			query.setQuery("first_name:"+termToSearch+ "OR id:"+termToSearch+"");
+			query.setQuery("first_name:"+termToSearch+ " OR id:"+termToSearch+"");
 			QueryResponse response = solr.query(query);
 			SolrDocumentList docList = response.getResults();
 			
@@ -91,8 +91,7 @@ public class SolrSearchService {
 			response = solr.query(query);
 			SolrDocumentList docList = response.getResults();
 			for (SolrDocument doc : docList) {
-			     LOG.info((String) doc.getFieldValue("title"));
-			     //assertEquals((Double) doc.getFieldValue("price"), (Double) 599.99);
+			     LOG.info("Title: {}",(String) doc.getFieldValue("title"));
 			     FierceNews fierceNews = FierceNews.getSolrFierceNews(doc);
 			     news.add(fierceNews);
 			     LOG.info("Title Results: {}", fierceNews.getTitle());
@@ -108,6 +107,7 @@ public class SolrSearchService {
 		StringBuffer fullQuery = new StringBuffer();
 		String[] fields = FierceNews.getFields();
 		for (String f : fields) {
+			if(!f.equalsIgnoreCase("datePublished") )
 			fullQuery.append(f).append(":").append(termToSearch).append(" or ");
 		}
 		String tempQuery = fullQuery.toString();

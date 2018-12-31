@@ -54,7 +54,7 @@ public class LuceneSearchService {
 			
 			//TopDocs foundDocs2 = searchByTitle(termToSearch, searcher);
 			
-			TopDocs foundDocs2 = search(FierceNews.getFields(), termToSearch, FierceNews.getFlags(), searcher, 1);
+			TopDocs foundDocs2 = search(FierceNews.getFields(), termToSearch, FierceNews.getFlags(), searcher, 10);
 			LOG.info("SearchByTitle : {}", termToSearch);
 			LOG.info("SearchByTitle Total Results: {}", foundDocs2.totalHits);
 			List<FierceNews> news = new ArrayList<>();
@@ -63,7 +63,7 @@ public class LuceneSearchService {
 				// LOG.info("Title Results: {}", document.get("title"));
 				FierceNews fierceNews = FierceNews.getFierceNews(document);
 				news.add(fierceNews);
-				LOG.info("Title Results: {}", fierceNews.getTitle());
+				LOG.info("Title Results: {} Score: {}", fierceNews.getTitle(),sd.score);
 			}
 			return new SearchDto(termToSearch, news);
 		} catch (Exception e) {

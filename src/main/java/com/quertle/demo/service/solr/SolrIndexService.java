@@ -20,13 +20,13 @@ import com.quertle.demo.utils.SolrUtils;
 @Service
 public class SolrIndexService {
 
-	private static final String URL_LINK = "url_link";
+	private static final String URL_LINK = "urlLink";
 
-	private static final String FULL_TEXT = "full_text";
+	private static final String FULL_TEXT = "fullText";
 
-	private static final String ABSTRACT = "abstract_content";
+	private static final String ABSTRACT = "abstract";
 
-	private static final String DATE_PUBLISHED = "date_published";
+	private static final String DATE_PUBLISHED = "datePublished";
 
 	private static final String AUTHOR = "author";
 
@@ -93,9 +93,12 @@ public class SolrIndexService {
 		// document.addField("id", id.toString());
 		LOG.info("Title : {} ", title);
 		document.addField(TITLE, title);
+		
 		if (authors != null && authors.size() > 0)
 			for (Author author : authors) {
-				document.addField(AUTHOR, author);
+				final StringBuilder authorNames = new StringBuilder();
+				authorNames.append(author.getFirstName() +" "+ author.getLastName());
+				document.addField(AUTHOR, authorNames.toString());
 				LOG.info("Author : {} ", author);
 			}
 		// document.addField("authors", f.getAuthors());

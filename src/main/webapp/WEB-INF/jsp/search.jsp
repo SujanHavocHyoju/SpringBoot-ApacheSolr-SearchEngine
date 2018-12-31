@@ -5,7 +5,7 @@
 	</head>
 	<body>
         <h3>Enter Search Query</h3>
-        <form method="POST" action="/search"  modelAttribute="search">
+        <form method="POST" action="/solr-search"  modelAttribute="search">
              <table>
 				<tr>
 					<td><label path="content">Query: </label></td>

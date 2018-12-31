@@ -27,6 +27,20 @@ import com.quertle.demo.repository.FierceNewsRepository;
 @Service
 public class LuceneIndexService {
 	
+	private static final String URL_LINK = "urlLink";
+
+	private static final String FULL_TEXT = "fullText";
+
+	private static final String ABSTRACT = "abstract";
+
+	private static final String AUTHOR = "author";
+
+	private static final String DATE_PUBLISHED = "datePublished";
+
+	private static final String TITLE = "title";
+
+	private static final String ID = "id";
+
 	private static final Logger LOG = LoggerFactory.getLogger(LuceneIndexService.class);
 	
 	@Autowired
@@ -92,21 +106,21 @@ public class LuceneIndexService {
 	 */
 	private static Document createDocument(Integer id, String title, Date datePublished, List<Author> authors, String abstractContent, String fullText, String urlLink) {
 		Document document = new Document();
-		document.add(new StringField("id", id.toString(), Store.YES));
-		document.add(new TextField("title", title, Store.YES));
-		document.add(new TextField("datePublished", datePublished.toString(), Store.YES));
+		document.add(new StringField(ID, id.toString(), Store.YES));
+		document.add(new TextField(TITLE, title, Store.YES));
+		document.add(new TextField(DATE_PUBLISHED, datePublished.toString(), Store.YES));
 		final StringBuilder authorNames = new StringBuilder();
 		if(authors != null && authors.size() > 0)
 			authors.stream().forEach(a -> {
 			authorNames.append(a.getFirstName() +" "+ a.getLastName()+",");
 		});	
-		document.add(new TextField("author", authorNames.toString(), Store.YES));
+		document.add(new TextField(AUTHOR, authorNames.toString(), Store.YES));
 		if(abstractContent != null)
-		document.add(new TextField("abstract", abstractContent, Store.YES));
+		document.add(new TextField(ABSTRACT, abstractContent, Store.YES));
 		if(fullText != null)
-		document.add(new TextField("fullText", fullText, Store.YES));
+		document.add(new TextField(FULL_TEXT, fullText, Store.YES));
 		if(urlLink != null)
-		document.add(new TextField("urlLink", urlLink, Store.YES));
+		document.add(new TextField(URL_LINK, urlLink, Store.YES));
 		
 		return document;
 	}
